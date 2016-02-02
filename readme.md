@@ -4,7 +4,7 @@ Mail
 #### Download via composer
 
 ```
-composer install ryby/mail --dev
+composer require ryby/mail --dev
 
 ```
 #### Usage
