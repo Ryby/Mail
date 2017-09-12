@@ -34,6 +34,11 @@ class FileMailer extends Object implements IMailer
 	 */
 	private $extension;
 
+	/**
+	 * @var Message[]
+	 */
+	private $history = [];
+
 	public function __construct(array $options = [])
 	{
 		$now = new DateTime;
@@ -50,12 +55,11 @@ class FileMailer extends Object implements IMailer
 		$this->checkRequirements();
 		$content = $message->generateMessage();
 		preg_match('/Message-ID: <(?<message_id>\w+)[^>]+>/', $content, $matches);
-
 		$path = $this->tempDir . '/' . $this->prefix . $matches['message_id'];
-
 		if ($this->extension) {
 			$path .= '.' . $this->extension;
 		}
+		$this->history[] = $message;
 		$bytes = file_put_contents($path, $content);
 		if ($bytes) {
 			return $bytes;
@@ -67,6 +71,24 @@ class FileMailer extends Object implements IMailer
 	public function setTempDir($tempDir)
 	{
 		$this->tempDir = $tempDir;
+	}
+
+	public function findBySubject($subject)
+	{
+		foreach ($this->getHistory() as $message) {
+			if ($message->getSubject() === $subject) {
+				return $message;
+			}
+		}
+		return NULL;
+	}
+
+	/**
+	 * @return Message[]
+	 */
+	public function getHistory()
+	{
+		return $this->history;
 	}
 
 	private function checkRequirements()
@@ -84,5 +106,4 @@ class FileMailer extends Object implements IMailer
 			throw new InvalidArgumentException("Directory '$this->tempDir' is not writeable.");
 		}
 	}
-
 }
