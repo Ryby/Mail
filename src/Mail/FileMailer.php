@@ -91,6 +91,11 @@ class FileMailer extends Object implements IMailer
 		return $this->history;
 	}
 
+	public function clearHistory()
+	{
+		$this->history = [];
+	}
+
 	private function checkRequirements()
 	{
 		if (is_null($this->tempDir)) {
