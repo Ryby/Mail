@@ -4,6 +4,7 @@ namespace Ryby\Mail\DI;
 
 use Nette\DI\CompilerExtension;
 use Nette\DI\Helpers;
+use Nette\Mail\IMailer;
 use Ryby\Mail\FileMailer;
 
 class FileMailerExtension extends CompilerExtension
@@ -21,7 +22,7 @@ class FileMailerExtension extends CompilerExtension
 		$this->validateConfig($this->defaults);
 		$config = $this->getConfig($this->defaults);
 
-		foreach ($builder->findByType('Nette\Mail\IMailer') as $name => $def) {
+		foreach ($builder->findByType(IMailer::class) as $name => $def) {
 			$builder->removeDefinition($name);
 		}
 

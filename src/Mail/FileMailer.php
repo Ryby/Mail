@@ -8,13 +8,15 @@ use Nette\InvalidArgumentException;
 use Nette\InvalidStateException;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * Based on https://github.com/romanmatyus/FileMailer
  */
-class FileMailer extends Object implements IMailer
+class FileMailer implements IMailer
 {
+
+	use SmartObject;
 
 	/**
 	 * Temp dir
