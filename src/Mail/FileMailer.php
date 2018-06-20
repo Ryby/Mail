@@ -19,7 +19,7 @@ class FileMailer implements IMailer
 	use SmartObject;
 
 	/**
-	 * Temp dir
+	 * Directory for storing message files
 	 * @var string
 	 */
 	private $tempDir;
@@ -46,15 +46,16 @@ class FileMailer implements IMailer
 		$now = new DateTime;
 		$this->prefix = $now->format("YmdHis") . '-';
 		$this->extension = $options['extension'];
+		$this->tempDir = $options['tempDir'];
 	}
 
 	/**
 	 * Store mails to files.
-	 * @param Message $message
+	 * @return string message file path
 	 */
 	public function send(Message $message)
 	{
-		$this->checkRequirements();
+		$this->checkMailerRequirements();
 		$content = $message->generateMessage();
 		preg_match('/Message-ID: <(?<message_id>\w+)[^>]+>/', $content, $matches);
 		$path = $this->tempDir . '/' . $this->prefix . $matches['message_id'];
@@ -62,17 +63,12 @@ class FileMailer implements IMailer
 			$path .= '.' . $this->extension;
 		}
 		$this->history[] = $message;
-		$bytes = file_put_contents($path, $content);
+		$bytes = @file_put_contents($path, $content);
 		if ($bytes) {
-			return $bytes;
+			return $path;
 		} else {
-			throw new InvalidStateException("Unable to write email to '$path'");
+			throw new InvalidStateException(sprintf("Unable to write email to '%s'.", $path));
 		}
-	}
-
-	public function setTempDir($tempDir)
-	{
-		$this->tempDir = $tempDir;
 	}
 
 	public function findBySubject($subject)
@@ -98,19 +94,12 @@ class FileMailer implements IMailer
 		$this->history = [];
 	}
 
-	private function checkRequirements()
+	private function checkMailerRequirements()
 	{
-		if (is_null($this->tempDir)) {
-			throw new InvalidArgumentException("Directory for temporary files is not defined.");
-		}
 		if (!is_dir($this->tempDir)) {
-			mkdir($this->tempDir);
-			if (!is_dir($this->tempDir)) {
-				throw new FileNotFoundException("'$this->tempDir' is not directory.");
+			if (!@mkdir($this->tempDir, 0777, true)) {
+				throw new \InvalidArgumentException(sprintf("Unable to create directory '%s'.", $this->tempDir));
 			}
-		}
-		if (!is_writable($this->tempDir)) {
-			throw new InvalidArgumentException("Directory '$this->tempDir' is not writeable.");
 		}
 	}
 }

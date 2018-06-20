@@ -18,19 +18,14 @@ class FileMailerExtension extends CompilerExtension
 	public function beforeCompile()
 	{
 		$builder = $this->getContainerBuilder();
-
 		$this->validateConfig($this->defaults);
 		$config = $this->getConfig($this->defaults);
-
 		foreach ($builder->findByType(IMailer::class) as $name => $def) {
 			$builder->removeDefinition($name);
 		}
-
-		$builder->addDefinition('fileMailer')
-				->setClass(FileMailer::class, [$config])
-				->addSetup('$tempDir', [
-					Helpers::expand($config['tempDir'], $builder->parameters)
-		]);
+		$config['tempDir'] = realpath(Helpers::expand($config['tempDir'], $builder->parameters));
+		$builder
+			->addDefinition('fileMailer')
+			->setFactory(FileMailer::class, [$config]);
 	}
-
 }

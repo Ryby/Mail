@@ -15,7 +15,14 @@
 		"nette/di": "^2.4",
 		"nette/mail": "^2.4"
 	},
+
 	"autoload": {
-		"classmap": ["src/"]
+		"psr-4": {
+				"Ryby\\": "src/"
+		}
+	},
+	"require-dev": {
+		"nette/tester": "^2.0",
+		"mikey179/vfsStream": "^1.6"
 	}
 }
