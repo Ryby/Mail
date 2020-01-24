@@ -51,9 +51,11 @@ class FileMailer implements IMailer
 
 	/**
 	 * Store mails to files.
-	 * @return string message file path
+	 * @param Message $message
+	 * @param callable|null $pathCallback
+	 * @return void
 	 */
-	public function send(Message $message)
+	public function send(Message $message, callable $pathCallback = null): void
 	{
 		$this->checkMailerRequirements();
 		$content = $message->generateMessage();
@@ -64,10 +66,11 @@ class FileMailer implements IMailer
 		}
 		$this->history[] = $message;
 		$bytes = @file_put_contents($path, $content);
-		if ($bytes) {
-			return $path;
-		} else {
+		if (!$bytes) {
 			throw new InvalidStateException(sprintf("Unable to write email to '%s'.", $path));
+		}
+		if ($pathCallback !== null) {
+			$pathCallback($path);
 		}
 	}
 

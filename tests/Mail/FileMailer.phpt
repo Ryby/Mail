@@ -47,7 +47,10 @@ class FileMailerTest extends TestCase
 			->setFrom('obi-wan@tatooine.com')
 			->addTo('anakin@deathstar.com')
 			->setBody('I have the high ground!');
-		$filename = $fileMailer->send($message);
+		$filename = '';
+		$fileMailer->send($message, function($path) use (&$filename) {
+			$filename .= $path;
+		});
 		Assert::type('string', $filename);
 		Assert::null($fileMailer->findBySubject(''));
 		Assert::equal($message, $fileMailer->findBySubject('last warning'));
