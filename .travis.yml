@@ -5,13 +5,12 @@ php:
   - 7.1
   - 7.2
   - 7.3
-  - 7.4
 
 env: TEST_PARAMS='-c tests/php.ini'
 
 matrix:
   include:
-    - php: 7.0
+    - php: 7.4
       env:
         - REPORT_COVERAGE=on
         - TEST_PARAMS='-c tests/php.ini  --coverage coverage.xml --coverage-src src/Mail/FileMailer.php'
