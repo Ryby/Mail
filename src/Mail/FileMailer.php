@@ -3,17 +3,15 @@
 namespace Ryby\Mail;
 
 use DateTime;
-use Nette\FileNotFoundException;
-use Nette\InvalidArgumentException;
 use Nette\InvalidStateException;
-use Nette\Mail\IMailer;
+use Nette\Mail\Mailer;
 use Nette\Mail\Message;
 use Nette\SmartObject;
 
 /**
  * Based on https://github.com/romanmatyus/FileMailer
  */
-class FileMailer implements IMailer
+class FileMailer implements Mailer
 {
 
 	use SmartObject;
